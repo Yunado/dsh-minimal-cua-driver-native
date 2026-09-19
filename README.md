@@ -21,14 +21,13 @@ Drives the `@trycua/cua-driver` native driver **in-process** (tsx-on-src, no sep
 
 ## Use
 
-It's a DSH (Cordis) plugin. Mount it in a profile alongside `computer-use` and `mcp-blender`:
+It's a standalone DSH (Cordis) plugin. Its only peer is the `computer-use` plugin (`@deepseek-ai/dsh-computer-use`); it has no dependency on any other plugin. Mount the CUA pair in a profile:
 
 ```yaml
 # cordis.patch.yml
 plugins:
   - computer-use
   - computer-use-cua-driver-native
-  - mcp-blender
 ```
 
 Then `pnpm dsh web`. Edits to `src/index.ts` apply on **host restart** (tsx-on-src, no rebuild).
