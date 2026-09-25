@@ -114,7 +114,7 @@ const SUMMARIZED_DESCRIPTIONS: Record<string, string> = {
   browser_type:
     'Type text into an exactly-bound tab via the Input domain. `mode="insert_text"` (default) = `Input.insertText`; `mode="keystrokes"` = per-character key events. Both insert at the caret (typing into a field with text appends); `replace=true` sets/clears the field. Pass a `ref` to an editable element from the latest snapshot. Dispatch is not acceptance: trusted/CDP input only guarantees the event was delivered, not that the field took it (controlled components / IME / some editors can drop it), so a `success` result is not proof the value landed — read back the field (re-`get_browser_state`) to confirm.',
   browser_navigate:
-    "Navigate one tab of an exactly-bound browser target to a new URL (http/https/about only). Refused for heuristic bindings. Navigation invalidates all `p<snapshot>:<index>` refs for the tab.",
+    "Navigate one tab of an exactly-bound browser target to a new URL (http/https/about only). Refused for heuristic bindings. Navigation invalidates all `p<snapshot>:<index>` refs for the tab. For local files, start a temp http server (e.g. `npx serve` or a 15-line node server) and navigate to `http://127.0.0.1:PORT/` — `file://` is not supported.",
   browser_pointer:
     "Perform hover / right-click / double-click / scroll / drag in an exactly-bound browser tab. Semantic refs must declare `pointer` for hover/right-click/double-click/drag; scroll accepts a `scroll` or `pointer` capability. `trusted` route uses CDP Input events, refuses if standalone background posture cannot be preserved; `dom_event` route requires a page ref. Never activates or brings a tab to the foreground.",
   browser_dialog:
@@ -138,6 +138,8 @@ const SUMMARIZED_DESCRIPTIONS: Record<string, string> = {
     "Walk a running app UIA tree and return BOTH a structured `elements` array (preferred) AND a Markdown rendering (back-compat). Every actionable element is tagged `[element_index N]` in the markdown and as `element_index` in the structured array — pass those indices to `click`, `type_text`, `scroll`, etc. Set `query` to a case-insensitive substring to project both `tree_markdown` and `elements` to matching rows + ancestor chain; `total_element_count` reports the complete snapshot, `returned_element_count` the projection.",
   zoom:
     'Zoom into a rectangular region of a window screenshot at full (native) resolution. Coordinates `x1, y1, x2, y2` are in the same pixel space as the screenshot returned by `get_window_state`. **The `required` array in the schema is incomplete: `pid` is mandatory for window scope (the runtime enforces it) but not listed in `required` — always pass `pid` alongside `window_id`.** Max zoom region width is 500 px in scaled-image coordinates.',
+  launch_app:
+    'Launch a Windows app hidden (SW_SHOWNOACTIVATE, no focus steal). Provide `bundle_id`/`name`/`aumid` or `path`. `urls` opens each URL in the default browser without activating it — **but the URL may not navigate (window opens on default page); verify with a fresh `get_window_state` after launch that the content actually loaded.** Returns pid + `windows` array (may be empty transiently — call `list_windows(pid)` a moment later).',
 };
 
 /** Strip per-field prose (description/title) from a JSON schema, keeping type/enum/required. */
