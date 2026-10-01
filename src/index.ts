@@ -10,7 +10,6 @@ import { createMcpToolDefinition } from "@deepseek-ai/dsh-mcp-client";
 import { z } from "zod";
 import type {
   CuaDriver as NativeDriver,
-  DriverAuthorizationAction,
   DriverAuthorizationDecision,
   DriverAuthorizationRequest,
 } from "@trycua/cua-driver";
@@ -107,7 +106,7 @@ const CONDENSE_SHORT: Record<string, string> = {
     "window (default, needs pid/window_id) vs desktop (screen-absolute, no pid).",
 };
 
-/** Hand-written condensed descriptions for the load-bearing tools (browser + desktop core). Mechanism kept, prose shortened — replaces the old 400-char hard cut. */
+/** Hand-written condensed descriptions for the load-bearing tools (browser + desktop core). Mechanism kept, prose shortened. */
 const SUMMARIZED_DESCRIPTIONS: Record<string, string> = {
   browser_click:
     'Click a page element (by `ref`) or viewport coordinates in an exactly-bound tab. Refused for heuristic bindings. Default `trusted` route = hardware-like `Input.dispatchMouseEvent`, refuses where it cannot preserve standalone-browser background posture; `input_route="dom_event"` (synthetic `el.click()`, ref required) only when explicitly requested — proves dispatch, not control activation.',
@@ -239,7 +238,7 @@ export async function apply(ctx: Context): Promise<void> {
 
   /** The child owns tool registrations; the outer effect owns native teardown. */
   async function mountRuntime(inner: Context): Promise<void> {
-    const { CuaDriver, RuntimeAuthorizationOptions } =
+    const { CuaDriver, RuntimeAuthorizationOptions, DriverAuthorizationAction } =
       await import("@trycua/cua-driver");
     lifetime.signal.throwIfAborted();
     // The generated constructor returns its class with an owned binding handle,
